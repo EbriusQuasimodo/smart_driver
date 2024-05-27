@@ -6,9 +6,9 @@ import 'package:path_provider/path_provider.dart';
 import 'core/utils/isar/user_isar_model.dart';
 import 'internal/app.dart';
 
-void main() async{
-    WidgetsFlutterBinding.ensureInitialized();
-
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //Create branch dev
   final dir = await getApplicationDocumentsDirectory();
   await Isar.open(
     [
