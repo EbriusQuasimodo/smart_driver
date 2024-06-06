@@ -25,6 +25,7 @@ final goRouterProvider =  Provider.autoDispose<GoRouter>((ref) {
       navigatorKey: _rootNavigatorKey,
       redirect: (context, GoRouterState state) {
         final isLoggedIn = authRepository.currentUser != null;
+        print(isLoggedIn);
         if (isLoggedIn) {
           if (state.uri.toString() == '/') {
             return '/races';
@@ -50,6 +51,7 @@ final goRouterProvider =  Provider.autoDispose<GoRouter>((ref) {
       branches: [
         
         StatefulShellBranch(
+          navigatorKey: _shellNavigatorAKey,
           routes: [
             GoRoute(
               path: '/races',
@@ -58,6 +60,7 @@ final goRouterProvider =  Provider.autoDispose<GoRouter>((ref) {
           ],
         ),
         StatefulShellBranch(
+          navigatorKey: _shellNavigatorBKey,
           routes: [
             GoRoute(
               path: '/profile',

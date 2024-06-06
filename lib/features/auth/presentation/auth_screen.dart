@@ -13,9 +13,9 @@ class AuthScreen extends ConsumerWidget {
   TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-     ref.listen<AsyncValue>(
+    ref.listen<AsyncValue>(
       loginScreenControllerProvider,
-          (_, state) {
+      (_, state) {
         if (!state.isLoading && state.hasError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error.toString())),
@@ -124,13 +124,28 @@ class AuthScreen extends ConsumerWidget {
                 child: ElevatedButton(
                     onPressed: () {
                       if (formGlobalKey.currentState!.validate()) {
-                        print('klsjdfklsdf');
-                        ref.read(loginScreenControllerProvider.notifier).signInAnonymously(
-                          'admin', 'admin', '1');
+                        ref
+                            .read(loginScreenControllerProvider.notifier)
+                            .signInAnonymously(loginController.text,
+                                passwordController.text, '1');
                       }
                     },
                     child: Text('Войти')),
-              )
+              ),
+              Container(
+                  width: double.infinity,
+                  margin:
+                      const EdgeInsets.only(left: 16.0, right: 16, bottom: 16),
+                  child: OutlinedButton(
+                      onPressed: () {},
+                      child: Text('Зарегестрировать организацию'))),
+              
+              Container(
+                  alignment: Alignment.center,
+                  margin:
+                      const EdgeInsets.only(left: 16.0, right: 16, bottom: 16),
+                  child: TextButton(
+                      onPressed: () {}, child: Text('Посмотреть тарифы')))
             ],
           ),
         ),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
@@ -18,22 +20,42 @@ class FakeAuthRepository {
 
   @override
   Future<void> logIn(String login, String password, String uid) async {
+    AppUser appUser = AppUser();
     if (currentUser == null && login == 'admin'&&password == 'admin') {
-      AppUser appUser = AppUser(
+       appUser = AppUser(
         userId: 1,
         orgId: 1,
         refresh: "e0732792-4bae-11ee-bf32-005056010812",
         token: "bf85080a-4fb2-11ee-814f-005056010812",
         role: "admin",
       );
-      User userData = User()
+  
+    }else if(currentUser == null && login == 'courier' && password =='courier'){
+       appUser = AppUser(
+        userId: 2,
+        orgId: 1,
+        refresh: "e0732792-4bae-11ee-bf32-005056010812",
+        token: "bf85080a-4fb2-11ee-814f-005056010812",
+        role: "courier",
+      );
+    }else if (currentUser == null && login == 'senior courier' && password =='senior courier') {
+       appUser = AppUser(
+        userId: 3,
+        orgId: 1,
+        refresh: "e0732792-4bae-11ee-bf32-005056010812",
+        token: "bf85080a-4fb2-11ee-814f-005056010812",
+        role: "senior courier",
+      );
+    }else {
+      print('========= Error ::: Uncorrect User login or password =========');
+    }
+        User userData = User()
         ..uid = uid
         ..id = appUser.userId
         ..orgId = appUser.orgId
         ..token = appUser.token
         ..refresh = appUser.refresh;
       await isar?.writeTxn(() async => await isar?.users.put(userData));
-    }
   }
 
   @override
