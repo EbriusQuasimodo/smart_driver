@@ -9,6 +9,8 @@ class AppColors {
   static const Color darkestGray = Color (0xFF707070);
   static const Color pressedYellow = Color(0xFFFFB800);
   static const Color bgBlack = Color(0xFF252525);
-  static const Color red = Color(0xFFFF4D4F);
+  static const Color red = Color(0xFFE36F57);
+  static const Color green = Color(0xFF6CB04A);
+  static const Color purple = Color(0xFF865CB6);
 
 }
