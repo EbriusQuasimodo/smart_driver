@@ -14,7 +14,6 @@ class AppTHemeData {
         backgroundColor: AppColors.bgBlack,
         titleTextStyle: TextStyle(
             color: AppColors.white, fontSize: 20, fontWeight: FontWeight.w600),
-
       ),
       inputDecorationTheme: InputDecorationTheme(
         fillColor: AppColors.bgBlack,
@@ -149,33 +148,33 @@ class AppTHemeData {
           ;
         }),
       )),
+      textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+        foregroundColor: AppColors.yellow,
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        textStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        shadowColor: Colors.transparent,
+      ).copyWith(
+        overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+          if (states.contains(MaterialState.pressed)) {
+            return AppColors.black;
+          }
+
+          return Colors.transparent;
+        }),
+        backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+          if (states.contains(MaterialState.pressed)) {
+            return AppColors.black;
+          }
+
+          return Colors.transparent;
+        }),
+      )),
     );
-    textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: AppColors.yellow,
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          textStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          shadowColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                  (Set<MaterialState> states) {
-                if (states.contains(MaterialState.pressed)) {
-                  return AppColors.black;
-                }
-
-                return Colors.transparent;
-              }),
-          backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-                  (Set<MaterialState> states) {
-                if (states.contains(MaterialState.pressed)) {
-                  return AppColors.black;
-                }
-
-                return Colors.transparent;
-              }),
-        )));
   }
 }
