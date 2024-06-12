@@ -9,7 +9,13 @@ import 'package:smart_driver/features/races/presentation/races_screen.dart';
 import 'go_router_refresh_screen.dart';
 import 'root_screen.dart';
 
-enum AppRoute { loginPage, racesPage, detailsPage, profilePage,}
+enum AppRoute {
+  loginPage,
+  racesPage,
+  detailsPage,
+  profilePage,
+}
+
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorAKey = GlobalKey<NavigatorState>(debugLabel: 'shellA');
 final _shellNavigatorBKey = GlobalKey<NavigatorState>(debugLabel: 'shellB');
@@ -17,58 +23,57 @@ final _shellNavigatorBKey = GlobalKey<NavigatorState>(debugLabel: 'shellB');
 final _shellNavigatorDKey = GlobalKey<NavigatorState>(debugLabel: 'shellD');
 final _shellNavigatorFKey = GlobalKey<NavigatorState>(debugLabel: 'shellF');
 
-final goRouterProvider =  Provider.autoDispose<GoRouter>((ref) { 
+final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
   final authRepository = ref.watch(fakeAuthRepositoryProvider);
   return GoRouter(
-  initialLocation: '/',
+    initialLocation: '/',
     debugLogDiagnostics: true,
-      navigatorKey: _rootNavigatorKey,
-      redirect: (context, GoRouterState state) {
-        final isLoggedIn = authRepository.currentUser != null;
-        print(isLoggedIn);
-        if (isLoggedIn) {
-          if (state.uri.toString() == '/') {
-            return '/races';
-          }
-        } else {
-          return '/';
+    navigatorKey: _rootNavigatorKey,
+    redirect: (context, GoRouterState state) {
+      final isLoggedIn = authRepository.currentUser != null;
+      print(isLoggedIn);
+      if (isLoggedIn) {
+        if (state.uri.toString() == '/') {
+          return '/races';
         }
-        return null;
-      },
-      refreshListenable:
-          GoRouterRefreshStream(authRepository.authStateChanges()),
-  routes: [
-     GoRoute(
-          path: '/',
-          name: AppRoute.loginPage.name,
-          builder: (context, state) => AuthScreen(),
-          routes: const [],
-        ),
-    // BottomNavigationBar
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) =>
-          RootScreen(navigationShell: navigationShell),
-      branches: [
-        
-        StatefulShellBranch(
-          navigatorKey: _shellNavigatorAKey,
-          routes: [
-            GoRoute(
-              path: '/races',
-              builder: (context, state) => const RacesScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _shellNavigatorBKey,
-          routes: [
-            GoRoute(
-              path: '/profile',
-              builder: (context, state) => const ProfileScreen(),
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
-);});
+      } else {
+        return '/';
+      }
+      return null;
+    },
+    refreshListenable: GoRouterRefreshStream(authRepository.authStateChanges()),
+    routes: [
+      GoRoute(
+        path: '/',
+        name: AppRoute.loginPage.name,
+        builder: (context, state) => AuthScreen(),
+        routes: const [],
+      ),
+      // BottomNavigationBar
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            RootScreen(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            navigatorKey: _shellNavigatorAKey,
+            routes: [
+              GoRoute(
+                path: '/races',
+                builder: (context, state) => const RacesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _shellNavigatorBKey,
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+});
