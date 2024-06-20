@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_driver/core/routing/routing.dart';
 import 'package:smart_driver/core/styles/colors.dart';
 import 'package:smart_driver/features/auth/presentation/auth_controller.dart';
+import 'package:smart_driver/features/registration/presentation/registration_screen.dart';
 import 'package:smart_driver/features/auth/widgets/custom_wave_clipper.dart';
 
 class AuthScreen extends ConsumerWidget {
@@ -65,7 +67,7 @@ class AuthScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: 4),
                         child: Text(
                           'Логин',
                           style: TextStyle(
@@ -74,6 +76,7 @@ class AuthScreen extends ConsumerWidget {
                               color: AppColors.white),
                         ),
                       ),
+                      
                       TextFormField(
                         controller: loginController,
                         validator: (val) {
@@ -91,7 +94,7 @@ class AuthScreen extends ConsumerWidget {
                         height: 12,
                       ),
                       const Padding(
-                        padding: EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: 4),
                         child: Text(
                           'Пароль',
                           style: TextStyle(
@@ -137,15 +140,11 @@ class AuthScreen extends ConsumerWidget {
                   margin:
                       const EdgeInsets.only(left: 16.0, right: 16, bottom: 16),
                   child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                     Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context){return RegistrationScreen();}));
+                      },
                       child: Text('Зарегестрировать организацию'))),
               
-              Container(
-                  alignment: Alignment.center,
-                  margin:
-                      const EdgeInsets.only(left: 16.0, right: 16, bottom: 16),
-                  child: TextButton(
-                      onPressed: () {}, child: Text('Посмотреть тарифы')))
             ],
           ),
         ),

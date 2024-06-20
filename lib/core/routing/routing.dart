@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isar/isar.dart';
+import 'package:smart_driver/core/utils/isar/user_isar_model.dart';
 import 'package:smart_driver/features/auth/data/fake_auth_repository.dart';
 import 'package:smart_driver/features/auth/presentation/auth_screen.dart';
+import 'package:smart_driver/features/registration/presentation/registration_screen.dart';
+import 'package:smart_driver/features/courier_map/presentation/courier_map_screen.dart';
 import 'package:smart_driver/features/profile/presentation/profile_screen.dart';
 import 'package:smart_driver/features/races/presentation/races_screen.dart';
 
@@ -19,6 +23,7 @@ final _shellNavigatorFKey = GlobalKey<NavigatorState>(debugLabel: 'shellF');
 
 final goRouterProvider =  Provider.autoDispose<GoRouter>((ref) { 
   final authRepository = ref.watch(fakeAuthRepositoryProvider);
+  print(authRepository.currentUser?.role);
   return GoRouter(
   initialLocation: '/',
     debugLogDiagnostics: true,
@@ -49,13 +54,31 @@ final goRouterProvider =  Provider.autoDispose<GoRouter>((ref) {
       builder: (context, state, navigationShell) =>
           RootScreen(navigationShell: navigationShell),
       branches: [
-        
+         StatefulShellBranch(
+          navigatorKey: _shellNavigatorFKey,
+          routes: [
+            GoRoute(
+              path: '/registration',
+              builder: (context, state) =>  RegistrationScreen(),
+            ),
+          ],
+        ),
         StatefulShellBranch(
           navigatorKey: _shellNavigatorAKey,
           routes: [
             GoRoute(
               path: '/races',
               builder: (context, state) => const RacesScreen(),
+            ),
+          ],
+        ),
+        if(authRepository.currentUser?.role =='senior courier'||authRepository.currentUser?.role =='admin')
+         StatefulShellBranch(
+          navigatorKey: _shellNavigatorDKey,
+          routes: [
+            GoRoute(
+              path: '/courier_map',
+              builder: (context, state) => const CourierMapScreen(),
             ),
           ],
         ),

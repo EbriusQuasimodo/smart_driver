@@ -10,7 +10,7 @@ class AppTHemeData {
       colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.yellow, background: AppColors.bgBlack),
       scaffoldBackgroundColor: AppColors.bgBlack,
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.bgBlack,
         titleTextStyle: TextStyle(
             color: AppColors.white, fontSize: 20, fontWeight: FontWeight.w600),
@@ -25,14 +25,14 @@ class AppTHemeData {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         hintStyle:
-            TextStyle(color: AppColors.darkGray, fontWeight: FontWeight.w400),
+            const TextStyle(color: AppColors.darkGray, fontWeight: FontWeight.w400),
         border: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.darkestGray),
+          borderSide: const BorderSide(color: AppColors.darkestGray),
           borderRadius: BorderRadius.circular(8),
         ),
         errorBorder: DecoratedInputBorder(
           child: OutlineInputBorder(
-            borderSide: BorderSide(color: AppColors.red),
+            borderSide: const BorderSide(color: AppColors.red),
             borderRadius: BorderRadius.circular(8),
           ),
           shadow: BoxShadow(
@@ -42,7 +42,7 @@ class AppTHemeData {
         ),
         focusedErrorBorder: DecoratedInputBorder(
           child: OutlineInputBorder(
-            borderSide: BorderSide(color: AppColors.red),
+            borderSide: const BorderSide(color: AppColors.red),
             borderRadius: BorderRadius.circular(8),
           ),
           shadow: BoxShadow(
@@ -50,18 +50,18 @@ class AppTHemeData {
             spreadRadius: 2,
           ),
         ),
-        outlineBorder: BorderSide(color: AppColors.darkestGray),
+        outlineBorder: const BorderSide(color: AppColors.darkestGray),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.darkestGray),
+          borderSide: const BorderSide(color: AppColors.darkestGray),
           borderRadius: BorderRadius.circular(8),
         ),
         disabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColors.darkestGray),
+          borderSide: const BorderSide(color: AppColors.darkestGray),
           borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: DecoratedInputBorder(
           child: OutlineInputBorder(
-            borderSide: BorderSide(color: AppColors.yellow),
+            borderSide: const BorderSide(color: AppColors.yellow),
             borderRadius: BorderRadius.circular(8),
           ),
           shadow: BoxShadow(
@@ -69,7 +69,7 @@ class AppTHemeData {
             spreadRadius: 3,
           ),
         ),
-        errorStyle: TextStyle(
+        errorStyle: const TextStyle(
           color: AppColors.red,
           decorationColor: AppColors.red,
           fontWeight: FontWeight.w400,
@@ -87,14 +87,14 @@ class AppTHemeData {
           borderRadius: BorderRadius.circular(8),
         ),
       ).copyWith(
-        overlayColor: MaterialStatePropertyAll(Colors.transparent),
+        overlayColor: const MaterialStatePropertyAll(Colors.transparent),
         side: MaterialStateProperty.resolveWith<BorderSide?>(
             (Set<MaterialState> states) {
           if (states.contains(MaterialState.pressed)) {
-            return BorderSide(color: AppColors.white);
+            return const BorderSide(color: AppColors.white);
           }
 
-          return BorderSide(color: AppColors.darkestGray);
+          return const BorderSide(color: AppColors.darkestGray);
           ;
         }),
       )),
@@ -106,13 +106,16 @@ class AppTHemeData {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500,color: AppColors.white),
+        disabledForegroundColor: AppColors.darkGray,
         foregroundColor: AppColors.white,
       ).copyWith(
         backgroundColor: MaterialStateProperty.resolveWith<Color?>(
             (Set<MaterialState> states) {
           if (states.contains(MaterialState.pressed)) {
             return AppColors.pressedYellow;
+          }if (states.contains(MaterialState.disabled)) {
+            return AppColors.black;
           }
 
           return AppColors.yellow;
@@ -134,25 +137,25 @@ class AppTHemeData {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
         foregroundColor: AppColors.white,
       ).copyWith(
-        overlayColor: MaterialStatePropertyAll(Colors.transparent),
+        overlayColor: const MaterialStatePropertyAll(Colors.transparent),
         side: MaterialStateProperty.resolveWith<BorderSide?>(
             (Set<MaterialState> states) {
           if (states.contains(MaterialState.pressed)) {
-            return BorderSide(color: AppColors.white);
+            return const BorderSide(color: AppColors.white);
           }
 
-          return BorderSide(color: AppColors.darkestGray);
-          ;
+          return const BorderSide(color: AppColors.darkestGray);
+          
         }),
       )),
       textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
         foregroundColor: AppColors.yellow,
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        textStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),

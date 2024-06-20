@@ -54,7 +54,7 @@ class FakeAuthRepository {
         ..id = appUser.userId
         ..orgId = appUser.orgId
         ..token = appUser.token
-        ..refresh = appUser.refresh;
+        ..refresh = appUser.refresh..role = appUser.role;
       await isar?.writeTxn(() async => await isar?.users.put(userData));
   }
 
