@@ -54,15 +54,7 @@ final goRouterProvider =  Provider.autoDispose<GoRouter>((ref) {
       builder: (context, state, navigationShell) =>
           RootScreen(navigationShell: navigationShell),
       branches: [
-         StatefulShellBranch(
-          navigatorKey: _shellNavigatorFKey,
-          routes: [
-            GoRoute(
-              path: '/registration',
-              builder: (context, state) =>  RegistrationScreen(),
-            ),
-          ],
-        ),
+       
         StatefulShellBranch(
           navigatorKey: _shellNavigatorAKey,
           routes: [
