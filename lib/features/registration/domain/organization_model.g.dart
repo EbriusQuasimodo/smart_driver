@@ -46,7 +46,7 @@ Map<String, dynamic> _$$OrganizationBranchesImplToJson(
 
 _$BranchSectorsImpl _$$BranchSectorsImplFromJson(Map<String, dynamic> json) =>
     _$BranchSectorsImpl(
-      organizationId: (json['branch_id'] as num?)?.toInt() ?? 0,
+      branchId: (json['branch_id'] as num?)?.toInt() ?? 0,
       coordinates: (json['coordinates'] as List<dynamic>?)
               ?.map((e) => Coordinates.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -55,7 +55,7 @@ _$BranchSectorsImpl _$$BranchSectorsImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$BranchSectorsImplToJson(_$BranchSectorsImpl instance) =>
     <String, dynamic>{
-      'branch_id': instance.organizationId,
+      'branch_id': instance.branchId,
       'coordinates': instance.coordinates.map((e) => e.toJson()).toList(),
     };
 

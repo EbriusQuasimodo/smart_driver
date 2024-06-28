@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,14 +8,18 @@ import 'package:smart_driver/features/registration/presentation/info_check_scree
 
 import 'registration_controller.dart';
 
-class BranchesScreen extends ConsumerWidget {
+class BranchesScreen extends ConsumerStatefulWidget {
   const BranchesScreen({super.key});
 
-
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    TextEditingController courierCountController = TextEditingController();
+  ConsumerState<BranchesScreen> createState() => _BranchesScreenState();
+}
+
+class _BranchesScreenState extends ConsumerState<BranchesScreen> {
+  Widget build(
+    BuildContext context,
+  ) {
+    // PageController controller = PageController();
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -75,6 +80,14 @@ class BranchesScreen extends ConsumerWidget {
                       height: 4,
                     ),
                     TextFormField(
+                      onChanged: (val) {
+                        setState(() {
+                          ref
+                              .read(orgInfoStateProvider)
+                              .branches?[index]
+                              .adress = val;
+                        });
+                      },
                       style: const TextStyle(
                           color: AppColors.white,
                           fontSize: 16,
@@ -94,6 +107,12 @@ class BranchesScreen extends ConsumerWidget {
                       height: 4,
                     ),
                     TextFormField(
+                      onChanged: (val) {
+                        setState(() {
+                          ref.read(orgInfoStateProvider).branches?[index].name =
+                              val;
+                        });
+                      },
                       style: const TextStyle(
                           color: AppColors.white,
                           fontSize: 16,
@@ -102,30 +121,6 @@ class BranchesScreen extends ConsumerWidget {
                     const SizedBox(
                       height: 12,
                     ),
-                       Text(
-                        'Количество курьеров в филиале',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.white),
-                      ),
-                      const SizedBox(
-                      height: 4,
-                    ),
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        controller: courierCountController,
-                        onChanged: (value) {
-                         
-                        },
-                        style: const TextStyle(
-                            color: AppColors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
                     Container(
                       width: double.infinity,
                       margin: const EdgeInsets.only(
@@ -158,6 +153,16 @@ class BranchesScreen extends ConsumerWidget {
                           onPressed: () {},
                           child: Text('Добавить зону доставки')),
                     ),
+                    SizedBox(
+                      height: 22,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {}, child: Text('Сохранить')))
+                      ],
+                    )
                   ],
                 ),
               );
@@ -166,14 +171,19 @@ class BranchesScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: Container(
               width: double.infinity,
-              margin: const EdgeInsets.only(top: 10, bottom: 46,left: 16,right: 16),
+              margin: const EdgeInsets.only(
+                  top: 10, bottom: 46, left: 16, right: 16),
               child: ElevatedButton(
-                  onPressed:  () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) {
-                            return InfoCheckScreen();
-                          }));
-                        },
+                  onPressed:
+                      (ref.watch(orgInfoStateProvider).branches ?? []).length >
+                              ref.watch(branchesCountStateProvider)
+                          ? () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                return InfoCheckScreen();
+                              }));
+                            }
+                          : null,
                   child: Text('Продолжить')),
             ),
           ),

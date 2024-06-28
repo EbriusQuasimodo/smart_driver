@@ -7,14 +7,24 @@ import 'package:smart_driver/features/auth/widgets/custom_wave_clipper.dart';
 import 'package:smart_driver/features/registration/presentation/branches_screen.dart';
 import 'package:smart_driver/features/registration/presentation/registration_controller.dart';
 
-class RegistrationScreen extends ConsumerWidget {
+class RegistrationScreen extends ConsumerStatefulWidget {
   RegistrationScreen({super.key});
+
+  @override
+  ConsumerState<RegistrationScreen> createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   final formGlobalKey = GlobalKey<FormState>();
 
   TextEditingController bracnhesCountController = TextEditingController();
+
   TextEditingController orgNameController = TextEditingController();
+
+  TextEditingController employeesCountController = TextEditingController();
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, ) {
     return Scaffold(
       body: SafeArea(
           child: SingleChildScrollView(
@@ -54,23 +64,26 @@ class RegistrationScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Название',
+                        'Укажите Название',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: AppColors.white),
                       ),
                       const SizedBox(
-                      height: 4,
-                    ),
+                        height: 4,
+                      ),
                       TextFormField(
                         controller: orgNameController,
                         onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            ref
-                                .read(organizationNameStateProvider.notifier)
-                                .state = value;
+                          setState(() {
+                            if (value.isNotEmpty) {
+                            ref.read(orgInfoStateProvider.notifier).state.name =
+                                value;
                           }
+                          });
+                          
+                        //  print(ref.read(orgInfoStateProvider).name);
                         },
                         validator: (val) {
                           if (val!.isEmpty) {
@@ -87,20 +100,21 @@ class RegistrationScreen extends ConsumerWidget {
                         height: 12,
                       ),
                       Text(
-                        'Количество филиалов',
+                        'Укажите количество филиалов',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: AppColors.white),
                       ),
                       const SizedBox(
-                      height: 4,
-                    ),
+                        height: 4,
+                      ),
                       TextFormField(
                         keyboardType: TextInputType.number,
                         controller: bracnhesCountController,
                         onChanged: (value) {
-                          if (value.isNotEmpty) {
+                          setState(() {
+                             if (value.isNotEmpty) {
                             ref
                                 .read(branchesCountStateProvider.notifier)
                                 .state = int.parse(value);
@@ -109,6 +123,8 @@ class RegistrationScreen extends ConsumerWidget {
                                 .read(branchesCountStateProvider.notifier)
                                 .state = 0;
                           }
+                          });
+                         
                         },
                         style: const TextStyle(
                             color: AppColors.white,
@@ -118,13 +134,55 @@ class RegistrationScreen extends ConsumerWidget {
                       const SizedBox(
                         height: 12,
                       ),
-                     
+                      Text(
+                        'Укажите количество сотрудников(курьеры/администраторы/старшие курьеры)',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.white),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      TextFormField(
+                        keyboardType: TextInputType.number,
+                        controller: employeesCountController,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value.isNotEmpty) {
+                            ref
+                                .read(orgInfoStateProvider.notifier)
+                                .state
+                                .employees = int.parse(value);
+                          } else {
+                            ref
+                                .read(orgInfoStateProvider.notifier)
+                                .state
+                                .employees = 0;
+                          }
+                          });
+                          
+                         // print(ref.read(orgInfoStateProvider).employees);
+                        },
+                        style: const TextStyle(
+                            color: AppColors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
                       Container(
                         width: double.infinity,
                         margin: const EdgeInsets.only(top: 10, bottom: 16),
                         child: ElevatedButton(
-                            onPressed: ref.watch(branchesCountStateProvider) !=
-                                    0
+                            onPressed: 
+                            ref.watch(orgInfoStateProvider).name !=''
+                                         &&
+                                    ref.watch(branchesCountStateProvider) !=
+                                        0 &&
+                                    ref.watch(orgInfoStateProvider).employees !=
+                                        0
                                 ? () {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
@@ -132,7 +190,7 @@ class RegistrationScreen extends ConsumerWidget {
                                       return BranchesScreen();
                                     }));
                                   }
-                                : null,
+                               : null,
                             child: Text('Продолжить')),
                       ),
                     ]),

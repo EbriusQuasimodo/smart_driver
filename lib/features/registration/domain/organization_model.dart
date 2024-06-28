@@ -38,7 +38,7 @@ class OrganizationBranches with _$OrganizationBranches {
 class BranchSectors with _$BranchSectors {
   @JsonSerializable(explicitToJson: true)
   factory BranchSectors({
-    @JsonKey(name: 'branch_id') @Default(0) int organizationId,
+    @JsonKey(name: 'branch_id') @Default(0) int branchId,
     @JsonKey(name: 'coordinates') @Default([]) List<Coordinates> coordinates,
   }) = _BranchSectors;
 

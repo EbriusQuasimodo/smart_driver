@@ -467,7 +467,7 @@ BranchSectors _$BranchSectorsFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$BranchSectors {
   @JsonKey(name: 'branch_id')
-  int get organizationId => throw _privateConstructorUsedError;
+  int get branchId => throw _privateConstructorUsedError;
   @JsonKey(name: 'coordinates')
   List<Coordinates> get coordinates => throw _privateConstructorUsedError;
 
@@ -484,7 +484,7 @@ abstract class $BranchSectorsCopyWith<$Res> {
       _$BranchSectorsCopyWithImpl<$Res, BranchSectors>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'branch_id') int organizationId,
+      {@JsonKey(name: 'branch_id') int branchId,
       @JsonKey(name: 'coordinates') List<Coordinates> coordinates});
 }
 
@@ -501,13 +501,13 @@ class _$BranchSectorsCopyWithImpl<$Res, $Val extends BranchSectors>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? organizationId = null,
+    Object? branchId = null,
     Object? coordinates = null,
   }) {
     return _then(_value.copyWith(
-      organizationId: null == organizationId
-          ? _value.organizationId
-          : organizationId // ignore: cast_nullable_to_non_nullable
+      branchId: null == branchId
+          ? _value.branchId
+          : branchId // ignore: cast_nullable_to_non_nullable
               as int,
       coordinates: null == coordinates
           ? _value.coordinates
@@ -526,7 +526,7 @@ abstract class _$$BranchSectorsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'branch_id') int organizationId,
+      {@JsonKey(name: 'branch_id') int branchId,
       @JsonKey(name: 'coordinates') List<Coordinates> coordinates});
 }
 
@@ -541,13 +541,13 @@ class __$$BranchSectorsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? organizationId = null,
+    Object? branchId = null,
     Object? coordinates = null,
   }) {
     return _then(_$BranchSectorsImpl(
-      organizationId: null == organizationId
-          ? _value.organizationId
-          : organizationId // ignore: cast_nullable_to_non_nullable
+      branchId: null == branchId
+          ? _value.branchId
+          : branchId // ignore: cast_nullable_to_non_nullable
               as int,
       coordinates: null == coordinates
           ? _value._coordinates
@@ -562,7 +562,7 @@ class __$$BranchSectorsImplCopyWithImpl<$Res>
 @JsonSerializable(explicitToJson: true)
 class _$BranchSectorsImpl implements _BranchSectors {
   _$BranchSectorsImpl(
-      {@JsonKey(name: 'branch_id') this.organizationId = 0,
+      {@JsonKey(name: 'branch_id') this.branchId = 0,
       @JsonKey(name: 'coordinates')
       final List<Coordinates> coordinates = const []})
       : _coordinates = coordinates;
@@ -572,7 +572,7 @@ class _$BranchSectorsImpl implements _BranchSectors {
 
   @override
   @JsonKey(name: 'branch_id')
-  final int organizationId;
+  final int branchId;
   final List<Coordinates> _coordinates;
   @override
   @JsonKey(name: 'coordinates')
@@ -584,7 +584,7 @@ class _$BranchSectorsImpl implements _BranchSectors {
 
   @override
   String toString() {
-    return 'BranchSectors(organizationId: $organizationId, coordinates: $coordinates)';
+    return 'BranchSectors(branchId: $branchId, coordinates: $coordinates)';
   }
 
   @override
@@ -592,16 +592,16 @@ class _$BranchSectorsImpl implements _BranchSectors {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$BranchSectorsImpl &&
-            (identical(other.organizationId, organizationId) ||
-                other.organizationId == organizationId) &&
+            (identical(other.branchId, branchId) ||
+                other.branchId == branchId) &&
             const DeepCollectionEquality()
                 .equals(other._coordinates, _coordinates));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, organizationId,
-      const DeepCollectionEquality().hash(_coordinates));
+  int get hashCode => Object.hash(
+      runtimeType, branchId, const DeepCollectionEquality().hash(_coordinates));
 
   @JsonKey(ignore: true)
   @override
@@ -619,7 +619,7 @@ class _$BranchSectorsImpl implements _BranchSectors {
 
 abstract class _BranchSectors implements BranchSectors {
   factory _BranchSectors(
-          {@JsonKey(name: 'branch_id') final int organizationId,
+          {@JsonKey(name: 'branch_id') final int branchId,
           @JsonKey(name: 'coordinates') final List<Coordinates> coordinates}) =
       _$BranchSectorsImpl;
 
@@ -628,7 +628,7 @@ abstract class _BranchSectors implements BranchSectors {
 
   @override
   @JsonKey(name: 'branch_id')
-  int get organizationId;
+  int get branchId;
   @override
   @JsonKey(name: 'coordinates')
   List<Coordinates> get coordinates;

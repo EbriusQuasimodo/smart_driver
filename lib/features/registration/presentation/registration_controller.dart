@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:smart_driver/features/registration/data/fake_registr_repository.dart';
+import 'package:smart_driver/features/registration/data/org_info_model.dart';
+import 'package:smart_driver/features/registration/domain/organization_model.dart';
 
 part 'registration_controller.g.dart';
 
@@ -18,7 +20,18 @@ class LoginScreenController extends _$LoginScreenController {
   }
 }
 
-final branchesCountStateProvider = StateProvider.autoDispose<int>((ref) {
+final orgInfoStateProvider = StateProvider<OrgInfoModel>((ref) {
+  return OrgInfoModel();
+});
+
+final currentBranchPageStateProvider = StateProvider.autoDispose<int>((ref) {
+  return 0;
+});
+
+final branchesCountStateProvider = StateProvider<int>((ref) {
+  return 0;
+});
+final employeesCountStateProvider = StateProvider.autoDispose<int>((ref) {
   return 0;
 });
 final organizationNameStateProvider = StateProvider.autoDispose<String>((ref) {
