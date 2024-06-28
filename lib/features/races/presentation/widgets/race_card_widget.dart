@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_driver/core/styles/colors.dart';
+import 'package:smart_driver/features/race_detalis/presentation/details_screen.dart';
 
 class RaceCardWidget extends StatelessWidget {
   final Color cardColor;
@@ -20,7 +21,10 @@ class RaceCardWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => DetailsScreen()));
+        },
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
