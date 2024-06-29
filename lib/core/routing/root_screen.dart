@@ -24,58 +24,54 @@ class RootScreen extends ConsumerWidget {
               ref.watch(pageOpenStateProvider) !=
                   GoRouterState.of(context).uri.path
           ? ExpandableFab(
+            pos: ExpandableFabPos.center,
               fanAngle: 0,
-              distance: 60,
+              distance: 70,
               overlayStyle: ExpandableFabOverlayStyle(blur: 10),
               type: ExpandableFabType.up,
               openButtonBuilder: DefaultFloatingActionButtonBuilder(
-                heroTag: null,
-                child: const Text(
-                  'Меню',
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.white),
-                ),
+             
+                child: Icon(Icons.menu),
                 fabSize: ExpandableFabSize.regular,
                 foregroundColor: AppColors.white,
                 backgroundColor: AppColors.pressedYellow,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                shape: CircleBorder()
               ),
               closeButtonBuilder: DefaultFloatingActionButtonBuilder(
-                child: const Text(
-                  'Меню',
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.white),
-                ),
+               child: Icon(Icons.menu),
                 fabSize: ExpandableFabSize.regular,
                 foregroundColor: AppColors.white,
                 backgroundColor: AppColors.pressedYellow,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                shape: CircleBorder()
               ),
               children: [
-                  ElevatedButton(
-                      onPressed: () {}, child: Text('Создать заказ')),
-                  ElevatedButton(
-                      onPressed: () {}, child: Text('Создать заход')),
-                  ElevatedButton(onPressed: () {}, child: Text('Все заказы')),
-                  ElevatedButton(
-                      onPressed: () {
-                        ref.read(pageOpenStateProvider.notifier).state =
-                            '/courier_map';
-                        ref.read(goRouterProvider).push('/courier_map').then(
-                            (value) => ref
-                                .read(pageOpenStateProvider.notifier)
-                                .state = '');
-                      },
-                      child: Text('Курьеры')),
+                  SizedBox(width: 179,
+                    child: ElevatedButton(
+                        onPressed: () {}, child: Text('Создать заказ')),
+                  ),
+                  SizedBox(width: 179,
+                    child: ElevatedButton(
+                        onPressed: () {}, child: Text('Создать заход')),
+                  ),
+                  SizedBox(width: 179,child: ElevatedButton(onPressed: () {}, child: Text('Все заказы'))),
+                  SizedBox(
+                    width: 179,
+                    child: ElevatedButton(
+                      
+                        onPressed: () {
+                          ref.read(pageOpenStateProvider.notifier).state =
+                              '/courier_map';
+                          ref.read(goRouterProvider).push('/courier_map').then(
+                              (value) => ref
+                                  .read(pageOpenStateProvider.notifier)
+                                  .state = '');
+                        },
+                        child: Text('Курьеры')),
+                  ),
                 ])
           : SizedBox.shrink(),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.black,
         /// Лист элементов для нижнего навигационного бара.
         items: [
           const BottomNavigationBarItem(

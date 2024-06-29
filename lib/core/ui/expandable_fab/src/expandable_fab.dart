@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:smart_driver/core/styles/colors.dart';
 
 import '../flutter_expandable_fab.dart';
 
@@ -9,7 +10,7 @@ import '../flutter_expandable_fab.dart';
 enum ExpandableFabType { fan, up, side }
 
 /// The position options for the FAB on the screen.
-enum ExpandableFabPos { right, left }
+enum ExpandableFabPos { right, left, center }
 
 /// Animation Type
 enum ExpandableFabAnimation { none, rotate }
@@ -225,13 +226,16 @@ class ExpandableFabState extends State<ExpandableFab>
         double x;
         if (widget.pos == ExpandableFabPos.right) {
           x = kFloatingActionButtonMargin + geometry.minInsets.right;
-        } else {
+        } else if (widget.pos == ExpandableFabPos.left) {
           x = -kFloatingActionButtonMargin - geometry.minInsets.left;
+        } else {
+          x = -((MediaQuery.of(context).size.width - 70) / 2);
         }
         final bottomContentHeight =
             geometry.scaffoldSize.height - geometry.contentBottom;
         final y = kFloatingActionButtonMargin +
-            math.max(geometry.minViewPadding.bottom, bottomContentHeight);
+            math.max(geometry.minViewPadding.bottom, bottomContentHeight) -
+            70;
         if (offset != Offset(x, y)) {
           offset = Offset(x, y);
           cache = _buildButtons(offset!);
@@ -316,8 +320,11 @@ class ExpandableFabState extends State<ExpandableFab>
     var totalOffset = offset;
     if (widget.pos == ExpandableFabPos.right) {
       totalOffset += widget.childrenOffset + Offset(buttonOffset, buttonOffset);
-    } else {
+    } else if(widget.pos == ExpandableFabPos.right){
       totalOffset += Offset(-widget.childrenOffset.dx - buttonOffset,
+          widget.childrenOffset.dy + buttonOffset);
+    }else{
+        totalOffset += Offset(55,
           widget.childrenOffset.dy + buttonOffset);
     }
     for (var i = 0; i < count; i++) {
@@ -364,9 +371,18 @@ class ExpandableFabState extends State<ExpandableFab>
       ignoring: _open,
       child: ScaleTransition(
         scale: Tween(begin: transformValues, end: 1.0).animate(reverse),
-        child: FadeTransition(
-          opacity: reverse,
-          child: _openButtonBuilder.builder(context, toggle, _expandAnimation),
+        child: Container(
+          padding: EdgeInsets.all(10),
+          height: 70,
+          width: 70,
+          decoration: ShapeDecoration(
+              color: _open ? Colors.transparent : AppColors.black,
+              shape: CircleBorder()),
+          child: FadeTransition(
+            opacity: reverse,
+            child:
+                _openButtonBuilder.builder(context, toggle, _expandAnimation),
+          ),
         ),
       ),
     );
