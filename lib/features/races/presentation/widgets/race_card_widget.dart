@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_driver/core/routing/routing.dart';
 import 'package:smart_driver/core/styles/colors.dart';
 import 'package:smart_driver/features/race_detalis/presentation/details_screen.dart';
 
-class RaceCardWidget extends StatelessWidget {
+class RaceCardWidget extends ConsumerWidget {
   final Color cardColor;
   final String raceName;
   final String raceTime;
@@ -16,14 +18,15 @@ class RaceCardWidget extends StatelessWidget {
       required this.raceStatus});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Material(
       borderRadius: BorderRadius.circular(10),
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => DetailsScreen()));
+          ref.read(goRouterProvider).push('/details_page_map');
+          // Navigator.push(
+          //     context, MaterialPageRoute(builder: (BuildContext context) => DetailsScreen()));
         },
         child: Container(
           padding: const EdgeInsets.all(16),
