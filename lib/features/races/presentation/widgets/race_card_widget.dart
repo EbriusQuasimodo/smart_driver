@@ -24,9 +24,9 @@ class RaceCardWidget extends ConsumerWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          ref.read(goRouterProvider).push('/details_page_map');
-          // Navigator.push(
-          //     context, MaterialPageRoute(builder: (BuildContext context) => DetailsScreen()));
+          //ref.read(goRouterProvider).push('/details_page_map');
+          Navigator.of(context,rootNavigator:true,).push(
+               MaterialPageRoute(builder: (BuildContext context,) => DetailsScreen()));
         },
         child: Container(
           padding: const EdgeInsets.all(16),

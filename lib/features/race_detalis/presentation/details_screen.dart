@@ -3,18 +3,21 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_driver/core/routing/routing.dart';
+import 'package:smart_driver/core/styles/colors.dart';
 import 'package:smart_driver/features/race_detalis/domain/app_location.dart';
 import 'package:smart_driver/features/race_detalis/domain/default_location.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-class DetailsScreen extends StatefulWidget {
+class DetailsScreen extends ConsumerStatefulWidget {
   const DetailsScreen({super.key});
 
   @override
-  State<DetailsScreen> createState() => _DetailsScreenState();
+  ConsumerState<DetailsScreen> createState() => _DetailsScreenState();
 }
 
-class _DetailsScreenState extends State<DetailsScreen> {
+class _DetailsScreenState extends ConsumerState<DetailsScreen> {
   List<AppLatLong> ordersPoints = [
     AppLatLong(long: 61.387381, lat: 55.144639),
     // AppLatLong(long: 61.383308, lat: 55.154205),
@@ -29,7 +32,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   late YandexMapController controller;
 
-  //bool showTrafficLayer = false;
+  bool showTrafficLayer = false;
 
   final MapObjectId mapObjectIdPolyline = const MapObjectId('polyline');
   final MapObjectId mapObjectIdFirstMarker = const MapObjectId('first_marker');
@@ -38,7 +41,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   late AppLatLong location;
 
   ///уровень пробок
-  //int level = 0;
+  int level = 0;
 
   ///цвет трафика на дороге
   Color trafficColor = Colors.white;
@@ -52,17 +55,20 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   void initState() {
+    initializeMap();
+    super.initState();
+    //crypt();
+  }
+
+  void initializeMap() async {
     ///получение маршрута
-    getRouteYandexDriving();
+    await getRouteYandexDriving();
 
     ///получение маркеров
-    getPlacemarks();
+    await getPlacemarks();
 
     ///инициализация разрешения на геолокацию и запуск анимации приближения к пользователю
     _initPermission().ignore();
-
-    super.initState();
-    //crypt();
   }
 
   ///перемещение камеры к текущему местоположению
@@ -199,46 +205,45 @@ class _DetailsScreenState extends State<DetailsScreen> {
       point: Point(latitude: location.lat, longitude: location.long),
       icon: PlacemarkIcon.single(
         PlacemarkIconStyle(
-            image: BitmapDescriptor.fromBytes(await _rawPlacemarkImage()),
+          image: BitmapDescriptor.fromBytes(await _rawPlacemarkImage()),
           scale: 0.8,
         ),
       ),
-   opacity: 1,
+      opacity: 1,
     );
     setState(() {
       mapObjects.add(placeMarkFirst);
     });
 
     ///
-List<PlacemarkMapObject> markers =[];
+    List<PlacemarkMapObject> markers = [];
     for (int i = 0; i < ordersPoints.length; i++) {
       mapObjectIdSecondMarker = MapObjectId('marker_$i');
-      
-        markers.add(PlacemarkMapObject(
-          mapId: mapObjectIdSecondMarker ?? MapObjectId('marker_$i'),
-          point: Point(
-              latitude: ordersPoints[i].lat, longitude: ordersPoints[i].long),
-          icon: PlacemarkIcon.single(
-            PlacemarkIconStyle(
-             image: BitmapDescriptor.fromBytes(await _rawPlacemarkImage()),
-              scale: 0.8,
-            ),
+
+      markers.add(PlacemarkMapObject(
+        mapId: mapObjectIdSecondMarker ?? MapObjectId('marker_$i'),
+        point: Point(
+            latitude: ordersPoints[i].lat, longitude: ordersPoints[i].long),
+        icon: PlacemarkIcon.single(
+          PlacemarkIconStyle(
+            image: BitmapDescriptor.fromBytes(await _rawPlacemarkImage()),
+            scale: 0.8,
           ),
-           opacity: 1,
-        ));
-  
+        ),
+        opacity: 1,
+      ));
     }
     setState(() {
-       mapObjects.addAll(markers);
+      mapObjects.addAll(markers);
     });
-   
+
     print(mapObjects.length);
 
     ///
   }
 
   ///----------------------------------------------------------------------------
-    Future<Uint8List> _rawPlacemarkImage() async {
+  Future<Uint8List> _rawPlacemarkImage() async {
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder);
     const size = Size(50, 50);
@@ -256,40 +261,57 @@ List<PlacemarkMapObject> markers =[];
     canvas.drawCircle(circleOffset, radius, fillPaint);
     canvas.drawCircle(circleOffset, radius, strokePaint);
 
-    final image = await recorder.endRecording().toImage(size.width.toInt(), size.height.toInt());
+    final image = await recorder
+        .endRecording()
+        .toImage(size.width.toInt(), size.height.toInt());
     final pngBytes = await image.toByteData(format: ImageByteFormat.png);
 
     return pngBytes!.buffer.asUint8List();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+          extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        toolbarHeight: 47,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leadingWidth: 55,
+        
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: GestureDetector(
+            onTap: (){ref.read(goRouterProvider).pop();},
+            child: Container(
+           padding: EdgeInsets.only(left: 8),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),color: AppColors.black.withOpacity(0.9)),
+              child:  const Icon(Icons.arrow_back_ios,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Expanded(
             child: YandexMap(
-              onMapCreated: (yandexMapController) async{
-                ///получение маршрута
-              await getRouteYandexDriving();
-
-                ///получение маркеров
-               await getPlacemarks();
-
-                ///инициализация разрешения на геолокацию и запуск анимации приближения к пользователю
-                _initPermission().ignore();
+              nightModeEnabled: true,
+              onMapCreated: (yandexMapController) async {
                 mapControllerCompleter.complete(yandexMapController);
                 controller = yandexMapController;
               },
-              // onTrafficChanged: (TrafficLevel? trafficLevel) {
-              //   setState(() {
-              //     //level = trafficLevel?.level ?? 0;
-              //     trafficColor = trafficLevel != null
-              //         ? _colorFromTraffic(trafficLevel.color)
-              //         : Colors.white;
-              //   });
-              // },
+              onTrafficChanged: (TrafficLevel? trafficLevel) {
+                setState(() {
+                  level = trafficLevel?.level ?? 0;
+                  trafficColor = trafficLevel != null
+                      ? _colorFromTraffic(trafficLevel.color)
+                      : Colors.white;
+                });
+              },
               mapObjects: mapObjects,
             ),
           ),
