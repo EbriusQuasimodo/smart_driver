@@ -685,6 +685,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  snapping_sheet_2:
+    dependency: "direct main"
+    description:
+      name: snapping_sheet_2
+      sha256: "8e7c7b746a226673cd5d2680b23dfa315e5ac75f551e8c05aa37eba24fb5487d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.5"
   source_gen:
     dependency: transitive
     description:

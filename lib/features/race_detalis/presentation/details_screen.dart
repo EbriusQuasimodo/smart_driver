@@ -3,11 +3,13 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_driver/core/routing/routing.dart';
 import 'package:smart_driver/core/styles/colors.dart';
 import 'package:smart_driver/features/race_detalis/domain/app_location.dart';
 import 'package:smart_driver/features/race_detalis/domain/default_location.dart';
+import 'package:snapping_sheet_2/snapping_sheet.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class DetailsScreen extends ConsumerStatefulWidget {
@@ -269,54 +271,260 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen> {
     return pngBytes!.buffer.asUint8List();
   }
 
+  final ScrollController listViewController = new ScrollController();
+  int listLength = 15;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-          extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         toolbarHeight: 47,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leadingWidth: 55,
-        
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: GestureDetector(
-            onTap: (){ref.read(goRouterProvider).pop();},
+            onTap: () {
+              ref.read(goRouterProvider).pop();
+            },
             child: Container(
-           padding: EdgeInsets.only(left: 8),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),color: AppColors.black.withOpacity(0.9)),
-              child:  const Icon(Icons.arrow_back_ios,
+              padding: EdgeInsets.only(left: 8),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: AppColors.black.withOpacity(0.9)),
+              child: const Icon(
+                Icons.arrow_back_ios,
                 color: AppColors.white,
               ),
             ),
           ),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Expanded(
-            child: YandexMap(
-              nightModeEnabled: true,
-              onMapCreated: (yandexMapController) async {
-                mapControllerCompleter.complete(yandexMapController);
-                controller = yandexMapController;
-              },
-              onTrafficChanged: (TrafficLevel? trafficLevel) {
-                setState(() {
-                  level = trafficLevel?.level ?? 0;
-                  trafficColor = trafficLevel != null
-                      ? _colorFromTraffic(trafficLevel.color)
-                      : Colors.white;
-                });
-              },
-              mapObjects: mapObjects,
+      body: SnappingSheet(
+        lockOverflowDrag: true,
+        snappingPositions: [
+          SnappingPosition.factor(
+            positionFactor: 0.0,
+            grabbingContentOffset: GrabbingContentOffset.top,
+          ),
+          // SnappingPosition.factor(
+          //   snappingCurve: Curves.elasticOut,
+          //   snappingDuration: Duration(milliseconds: 1750),
+          //   positionFactor: 1 / listLength - 1,
+          // ),
+          SnappingPosition.factor(positionFactor: min(0.7,(10*(listLength+3))/100)),
+        ],
+        grabbingHeight: 120,
+        grabbing: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.bgBlack,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
             ),
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                margin: EdgeInsets.only(bottom: 30),
+                width: 80,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: AppColors.darkestGray,
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                ),
+              ),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Информация о заходе номер 1',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.white),
+                  ))
+            ],
+          ),
+        ),
+        sheetAbove: null,
+        sheetBelow: SnappingSheetContent(
+          draggable: (details) => true,
+          childScrollController: listViewController,
+          child: SingleChildScrollView(
+            controller: listViewController,
+            child: Container(
+                padding: EdgeInsets.only(bottom: 16),
+                color: AppColors.bgBlack,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < listLength; i++) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(
+                          16,
+                        ),
+                        margin: EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: AppColors.black),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Заказ №${i}23',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.white),
+                                ),
+                                Text(
+                                  'до: 15:35',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.darkGray),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppColors.yellow),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Адрес доставки',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColors.yellow
+                              ),
+                                    child: Text(
+                                      'г. Челябинск, ул. Блюхера 1а, подъезд 3, кв. 7',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.bgBlack),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                           
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppColors.darkestGray),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                   Text(
+                                    'Комментарий к заказу:',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    'Пожалуста, позвоните как подъедите, домофон не работает - я выйду',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                SizedBox(
+                                    height: 12,
+                                  ),
+                                  Container(decoration: BoxDecoration(color: AppColors.darkestGray),width: double.infinity,height: 1,),
+                                  SizedBox(
+                                    height: 12,
+                                  ),
+                                  Text(
+                                    'Контактная информация:',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    '+76666666666\nАнастасия',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ]
+                  ],
+                )),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: YandexMap(
+                nightModeEnabled: true,
+                onMapCreated: (yandexMapController) async {
+                  mapControllerCompleter.complete(yandexMapController);
+                  controller = yandexMapController;
+                },
+                onTrafficChanged: (TrafficLevel? trafficLevel) {
+                  setState(() {
+                    level = trafficLevel?.level ?? 0;
+                    trafficColor = trafficLevel != null
+                        ? _colorFromTraffic(trafficLevel.color)
+                        : Colors.white;
+                  });
+                },
+                mapObjects: mapObjects,
+              ),
+            ),
+          ],
+        ),
       ),
+      // floatingActionButton: GestureDetector(onVerticalDragUpdate:(details){}, child: Container(margin: EdgeInsets.only(top: MediaQuery.of(context).size.height),),),
     );
   }
 }
