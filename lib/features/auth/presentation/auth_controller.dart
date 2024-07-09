@@ -8,7 +8,7 @@ part 'auth_controller.g.dart';
 class LoginScreenController extends _$LoginScreenController {
   @override
   FutureOr<void> build() {
-    // no-oppp
+    // no-op
   }
 
   Future<void> signInAnonymously(String login, String password, String uid) async {

@@ -1,21 +1,28 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_driver/core/routing/routing.dart';
+import 'package:smart_driver/core/styles/colors.dart';
 import 'package:smart_driver/features/race_detalis/domain/app_location.dart';
 import 'package:smart_driver/features/race_detalis/domain/default_location.dart';
+import 'package:snapping_sheet_2/snapping_sheet.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-class DetailsScreen extends StatefulWidget {
+class DetailsScreen extends ConsumerStatefulWidget {
   const DetailsScreen({super.key});
 
   @override
-  State<DetailsScreen> createState() => _DetailsScreenState();
+  ConsumerState<DetailsScreen> createState() => _DetailsScreenState();
 }
 
-class _DetailsScreenState extends State<DetailsScreen> {
+class _DetailsScreenState extends ConsumerState<DetailsScreen> {
   List<AppLatLong> ordersPoints = [
     AppLatLong(long: 61.387381, lat: 55.144639),
-   // AppLatLong(long: 61.383308, lat: 55.154205),
+    // AppLatLong(long: 61.383308, lat: 55.154205),
     AppLatLong(long: 61.433617, lat: 55.161347)
   ];
   late String signedString;
@@ -31,9 +38,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   final MapObjectId mapObjectIdPolyline = const MapObjectId('polyline');
   final MapObjectId mapObjectIdFirstMarker = const MapObjectId('first_marker');
-  final MapObjectId mapObjectIdSecondMarker =
-      const MapObjectId('second_marker');
-
+  MapObjectId? mapObjectIdSecondMarker;
 
   late AppLatLong location;
 
@@ -52,21 +57,23 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   void initState() {
-   
-    ///получение маршрута
-    getRouteYandexDriving();
-
-    ///получение маркеров
-    getPlacemarks();
-
-     ///инициализация разрешения на геолокацию и запуск анимации приближения к пользователю
-     _initPermission().ignore();
-   
-
+    initializeMap();
     super.initState();
     //crypt();
   }
- ///перемещение камеры к текущему местоположению
+
+  void initializeMap() async {
+    ///получение маршрута
+    await getRouteYandexDriving();
+
+    ///получение маркеров
+    await getPlacemarks();
+
+    ///инициализация разрешения на геолокацию и запуск анимации приближения к пользователю
+    _initPermission().ignore();
+  }
+
+  ///перемещение камеры к текущему местоположению
   Future<void> _moveToCurrentLocation(AppLatLong appLatLong) async {
     (await mapControllerCompleter.future).moveCamera(
       CameraUpdate.newCameraPosition(
@@ -81,8 +88,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
       animation: const MapAnimation(type: MapAnimationType.linear, duration: 1),
     );
   }
-  ///----------------------------------------------------------------------------
 
+  ///----------------------------------------------------------------------------
 
   ///получение разрешения на геолокацию если оно не получено
   Future<void> _initPermission() async {
@@ -91,6 +98,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
     await _fetchCurrentLocation();
   }
+
   ///----------------------------------------------------------------------------
 
   /// Получение текущей геопозиции пользователя
@@ -104,6 +112,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
     _moveToCurrentLocation(location);
   }
+
   ///----------------------------------------------------------------------------
 
   ///получаем цвет трафика и возвращаем его в переменную для хранения цвета трафика
@@ -145,15 +154,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
           initialAzimuth: 0, routesCount: 1, avoidTolls: false),
     );
 
-    _initRoute(resultWithSession.$1,resultWithSession.$2);
+    _initRoute(resultWithSession.$1, resultWithSession.$2);
   }
 
   ///----------------------------------------------------------------------------
 
   ///инициализация маршрута
   Future<void> _initRoute(
-    DrivingSession session , Future<DrivingSessionResult> result
-  ) async {
+      DrivingSession session, Future<DrivingSessionResult> result) async {
     await _handleResult(await result);
   }
 
@@ -177,9 +185,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
     setState(() {
       result.routes!.asMap().forEach((i, route) {
         mapObjects.add(PolylineMapObject(
-          mapId: mapObjectIdPolyline,
+          mapId: MapObjectId('route_${i}_polyline'),
           polyline: route.geometry,
-          strokeColor: Colors.blue,
+          strokeColor:
+              Colors.primaries[Random().nextInt(Colors.primaries.length)],
           strokeWidth: 3,
         ));
       });
@@ -198,10 +207,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
       point: Point(latitude: location.lat, longitude: location.long),
       icon: PlacemarkIcon.single(
         PlacemarkIconStyle(
-          image: BitmapDescriptor.fromAssetImage(
-            'assets/images/Car_icon_alone.png',
-          ),
-          scale: 0.5,
+          image: BitmapDescriptor.fromBytes(await _rawPlacemarkImage()),
+          scale: 0.8,
         ),
       ),
       opacity: 1,
@@ -211,76 +218,313 @@ class _DetailsScreenState extends State<DetailsScreen> {
     });
 
     ///
-
+    List<PlacemarkMapObject> markers = [];
     for (int i = 0; i < ordersPoints.length; i++) {
-      setState(() {
-        mapObjects.add(PlacemarkMapObject(
-          mapId: MapObjectId('marker_$i'),
-          point: Point(
-              latitude: ordersPoints[i].lat, longitude: ordersPoints[i].long),
-          icon: PlacemarkIcon.single(
-            PlacemarkIconStyle(
-              image: BitmapDescriptor.fromAssetImage(
-                'assets/images/25694.png',
-              ),
-              scale: 1,
-            ),
+      mapObjectIdSecondMarker = MapObjectId('marker_$i');
+
+      markers.add(PlacemarkMapObject(
+        mapId: mapObjectIdSecondMarker ?? MapObjectId('marker_$i'),
+        point: Point(
+            latitude: ordersPoints[i].lat, longitude: ordersPoints[i].long),
+        icon: PlacemarkIcon.single(
+          PlacemarkIconStyle(
+            image: BitmapDescriptor.fromBytes(await _rawPlacemarkImage()),
+            scale: 0.8,
           ),
-          opacity: 1,
-        ));
-      });
+        ),
+        opacity: 1,
+      ));
     }
+    setState(() {
+      mapObjects.addAll(markers);
+    });
+
     print(mapObjects.length);
-    // /// маркер конечной точки
-    // final placeMarkSecond = PlacemarkMapObject(
-    //   mapId: mapObjectIdSecondMarker,
-    //   point: Point(latitude: widget.alarm.lat, longitude: widget.alarm.lng),
-    //   icon: PlacemarkIcon.single(
-    //     PlacemarkIconStyle(
-    //       image: BitmapDescriptor.fromAssetImage(
-    //         'assets/icons/endRoute.png',
-    //       ),
-    //       scale: 0.5,
-    //     ),
-    //   ),
-    //   opacity: 1,
-    // );
-    // setState(() {
-    //   mapObjects.add(placeMarkSecond);
-    // });
 
     ///
   }
 
   ///----------------------------------------------------------------------------
+  Future<Uint8List> _rawPlacemarkImage() async {
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder);
+    const size = Size(50, 50);
+    final fillPaint = Paint()
+      ..color = Colors.blue[100]!
+      ..style = PaintingStyle.fill;
+    final strokePaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    const radius = 20.0;
+
+    final circleOffset = Offset(size.height / 2, size.width / 2);
+
+    canvas.drawCircle(circleOffset, radius, fillPaint);
+    canvas.drawCircle(circleOffset, radius, strokePaint);
+
+    final image = await recorder
+        .endRecording()
+        .toImage(size.width.toInt(), size.height.toInt());
+    final pngBytes = await image.toByteData(format: ImageByteFormat.png);
+
+    return pngBytes!.buffer.asUint8List();
+  }
+
+  final ScrollController listViewController = new ScrollController();
+  int listLength = 15;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Expanded(
-          child: YandexMap(
-            onMapCreated: (yandexMapController) {
-              mapControllerCompleter.complete(yandexMapController);
-              controller = yandexMapController;
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        toolbarHeight: 47,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leadingWidth: 55,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: GestureDetector(
+            onTap: () {
+              ref.read(goRouterProvider).pop();
             },
-            onTrafficChanged: (TrafficLevel? trafficLevel) {
-              setState(() {
-                level = trafficLevel?.level ?? 0;
-                trafficColor = trafficLevel != null
-                    ? _colorFromTraffic(trafficLevel.color)
-                    : Colors.white;
-              });
-            },
-            mapObjects: mapObjects,
+            child: Container(
+              padding: EdgeInsets.only(left: 8),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: AppColors.black.withOpacity(0.9)),
+              child: const Icon(
+                Icons.arrow_back_ios,
+                color: AppColors.white,
+              ),
+            ),
           ),
         ),
-
-      ],
-    ),
+      ),
+      body: SnappingSheet(
+        lockOverflowDrag: true,
+        snappingPositions: [
+          SnappingPosition.factor(
+            positionFactor: 0.0,
+            grabbingContentOffset: GrabbingContentOffset.top,
+          ),
+          // SnappingPosition.factor(
+          //   snappingCurve: Curves.elasticOut,
+          //   snappingDuration: Duration(milliseconds: 1750),
+          //   positionFactor: 1 / listLength - 1,
+          // ),
+          SnappingPosition.factor(positionFactor: min(0.7,(10*(listLength+3))/100)),
+        ],
+        grabbingHeight: 120,
+        grabbing: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.bgBlack,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                margin: EdgeInsets.only(bottom: 30),
+                width: 80,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: AppColors.darkestGray,
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                ),
+              ),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Информация о заходе номер 1',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.white),
+                  ))
+            ],
+          ),
+        ),
+        sheetAbove: null,
+        sheetBelow: SnappingSheetContent(
+          draggable: (details) => true,
+          childScrollController: listViewController,
+          child: SingleChildScrollView(
+            controller: listViewController,
+            child: Container(
+                padding: EdgeInsets.only(bottom: 16),
+                color: AppColors.bgBlack,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < listLength; i++) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(
+                          16,
+                        ),
+                        margin: EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: AppColors.black),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Заказ №${i}23',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.white),
+                                ),
+                                Text(
+                                  'до: 15:35',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.darkGray),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppColors.yellow),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Адрес доставки',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColors.yellow
+                              ),
+                                    child: Text(
+                                      'г. Челябинск, ул. Блюхера 1а, подъезд 3, кв. 7',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.bgBlack),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                           
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppColors.darkestGray),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                   Text(
+                                    'Комментарий к заказу:',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    'Пожалуста, позвоните как подъедите, домофон не работает - я выйду',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                SizedBox(
+                                    height: 12,
+                                  ),
+                                  Container(decoration: BoxDecoration(color: AppColors.darkestGray),width: double.infinity,height: 1,),
+                                  SizedBox(
+                                    height: 12,
+                                  ),
+                                  Text(
+                                    'Контактная информация:',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    '+76666666666\nАнастасия',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ]
+                  ],
+                )),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: YandexMap(
+                nightModeEnabled: true,
+                onMapCreated: (yandexMapController) async {
+                  mapControllerCompleter.complete(yandexMapController);
+                  controller = yandexMapController;
+                },
+                onTrafficChanged: (TrafficLevel? trafficLevel) {
+                  setState(() {
+                    level = trafficLevel?.level ?? 0;
+                    trafficColor = trafficLevel != null
+                        ? _colorFromTraffic(trafficLevel.color)
+                        : Colors.white;
+                  });
+                },
+                mapObjects: mapObjects,
+              ),
+            ),
+          ],
+        ),
+      ),
+      // floatingActionButton: GestureDetector(onVerticalDragUpdate:(details){}, child: Container(margin: EdgeInsets.only(top: MediaQuery.of(context).size.height),),),
     );
   }
-
 }
