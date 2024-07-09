@@ -11,9 +11,8 @@ class RacesScreen extends StatelessWidget {
         child: Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
-          SliverAppBar(
+          const SliverAppBar(
             title: Text('Заходы'),
-
           ),
           SliverPadding(
             padding: const EdgeInsets.all(16.0),

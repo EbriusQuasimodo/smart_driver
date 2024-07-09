@@ -8,7 +8,7 @@ import 'internal/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //Create branch dev
+
   final dir = await getApplicationDocumentsDirectory();
   await Isar.open(
     [
@@ -17,5 +17,5 @@ void main() async {
     inspector: true,
     directory: dir.path,
   );
-  runApp(ProviderScope(child: const App()));
+  runApp(const ProviderScope(child: App()));
 }

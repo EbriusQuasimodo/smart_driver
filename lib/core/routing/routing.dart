@@ -53,28 +53,25 @@ final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
                 path: '/races',
                 builder: (context, state) => const RacesScreen(),
               ),
-               GoRoute(
-                  path: '/courier_map',
-                  builder: (context, state) => const CourierMapScreen(),
-                ),
-                 GoRoute(
-                  path: '/details_page_map',
-                  builder: (context, state) => const DetailsScreen(),
-                ),
+              GoRoute(
+                path: '/courier_map',
+                builder: (context, state) => const CourierMapScreen(),
+              ),
+              GoRoute(
+                path: '/details_page_map',
+                builder: (context, state) => const DetailsScreen(),
+              ),
             ],
           ),
-          
           StatefulShellBranch(
             navigatorKey: _shellNavigatorBKey,
             routes: [
               GoRoute(
                 path: '/profile',
-                builder: (context, state) => const ProfileScreen(),
+                builder: (context, state) => ProfileScreen(),
               ),
             ],
           ),
-         
-          
         ],
       ),
     ];
