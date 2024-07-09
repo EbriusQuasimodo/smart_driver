@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_driver/core/styles/colors.dart';
@@ -62,7 +63,7 @@ class ProfileScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                     color: AppColors.black,
                     borderRadius: BorderRadius.circular(15.0)),
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.fromLTRB(30, 8, 20, 8),
                 child: Row(
                   children: [
                     const Text('0 ₽', style: TextStyle(color: AppColors.white)),
@@ -90,35 +91,38 @@ class ProfileScreen extends ConsumerWidget {
                       color: AppColors.black,
                       borderRadius: BorderRadius.circular(15.0)),
                   child: Column(children: [
-                    ExpansionTile(
-                      iconColor: AppColors.white,
-                      collapsedIconColor: AppColors.white,
-                      collapsedBackgroundColor: AppColors.black,
-                      backgroundColor: AppColors.black,
-                      shape: const RoundedRectangleBorder(
-                        side: BorderSide.none,
-                      ),
-                      title: const Text(
-                        'Список сотрудников',
-                        style: TextStyle(color: AppColors.white),
-                      ),
-                      children: [
-                        SizedBox(
-                          height: 300,
-                          child: ListView.builder(
-                            itemCount: employess.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                textColor: AppColors.white,
-                                onTap: () {},
-                                title: Text(
-                                  employess[index],
-                                ),
-                              );
-                            },
-                          ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(15.0),
+                      child: ExpansionTile(
+                        iconColor: AppColors.white,
+                        collapsedIconColor: AppColors.white,
+                        collapsedBackgroundColor: AppColors.black,
+                        backgroundColor: AppColors.black,
+                        shape: const RoundedRectangleBorder(
+                          side: BorderSide.none,
                         ),
-                      ],
+                        title: const Text(
+                          'Список сотрудников',
+                          style: TextStyle(color: AppColors.white),
+                        ),
+                        children: [
+                          SizedBox(
+                            height: 300,
+                            child: ListView.builder(
+                              itemCount: employess.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  textColor: AppColors.white,
+                                  onTap: () {},
+                                  title: Text(
+                                    employess[index],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     ExpansionTile(
                       iconColor: AppColors.white,
